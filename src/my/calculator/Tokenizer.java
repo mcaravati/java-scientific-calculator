@@ -13,7 +13,7 @@ import java.util.function.Supplier;
  */
 public class Tokenizer implements Supplier<Token> {
 
-    final String SYMBOLS = "+-*/()";
+    final String SYMBOLS = "+-*/";
 
     String line;
     int next;

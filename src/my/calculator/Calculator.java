@@ -11,44 +11,89 @@ package my.calculator;
  */
 public class Calculator {
 
+    Tokenizer tokenizer;
+    Token token;
+
     public Calculator() {
+
     }
 
     public int evaluation(String line) throws SyntaxErrorException, EvaluationErrorException {
-        Tokenizer tokenizer = new Tokenizer(line);
-        Token token = tokenizer.get();
-        Token token2 = null;
-        checkSyntax(token.isNumber(), "Number expected");
-        int total = token.value();
-
+        tokenizer = new Tokenizer(line.replaceAll(" +", ""));
         token = tokenizer.get();
-        while (!token.isEnd()) {
-            if (token.isASymbol()) {
-                token2 = tokenizer.get();
-                checkSyntax(token2.isNumber(), "Number expected");
-                switch (token.string) {
-                    case "+":
-                        total += token2.value();
-                        break;
-                    case "-":
-                        total -= token2.value();
-                        break;
-                    case "/":
-                        if (token2.value() == 0) {
-                            throw new EvaluationErrorException(token2.string);
-                        }
-                        total /= token2.value();
-                        break;
-                }
-                token = tokenizer.get();
-            }
-        }
+
+        int total = get_expr_value();
 
         checkSyntax(token.isEnd(), String.format("End of expression expected, %s found", token));
         return total;
     }
 
     private void checkSyntax(boolean state, String line) throws SyntaxErrorException {
-        if (!state) throw new SyntaxErrorException(line);
+        if (!state) {
+            throw new SyntaxErrorException(line);
+        }
+    }
+
+    private int get_expr_value() throws SyntaxErrorException, EvaluationErrorException {
+        int total = get_term_value();
+
+        while (token.isASymbol() && !token.isEnd()) {
+            switch (token.string) {
+                case "+":
+                    token = tokenizer.get();
+                    total += get_term_value();
+                    break;
+                case "-":
+                    token = tokenizer.get();
+                    total -= get_term_value();
+                    break;
+            }
+
+        }
+        return total;
+    }
+
+    private int get_term_value() throws SyntaxErrorException, EvaluationErrorException {
+        int total = get_factor_value();
+
+        if (token.isASymbol() && !token.isEnd()) {
+            switch (token.string) {
+                case "/":
+                    token = tokenizer.get();
+                    if (token.isNumber() && token.value() == 0) {
+                        throw new EvaluationErrorException("Division by 0");
+                    }
+                    total /= get_factor_value();
+                    break;
+                case "*":
+                    token = tokenizer.get();
+                    total *= get_factor_value();
+                    break;
+            }
+
+        }
+        return total;
+    }
+
+    private int get_number_value() throws SyntaxErrorException {
+        checkSyntax(token.isNumber(), "Number expected");
+        int value = token.value();
+        token = tokenizer.get();
+        return value;
+    }
+
+    private int get_factor_value() throws SyntaxErrorException, EvaluationErrorException {
+        int total = 0;
+        if (token.isNumber()) {
+            total += get_number_value();
+        } else if (token.isSymbol("(")) {
+            token = tokenizer.get();
+            total += get_expr_value();
+            checkSyntax(token.isSymbol(")"), ") expected");
+            token = tokenizer.get();
+        } else {
+            throw new SyntaxErrorException("What the fuck");
+        }
+        return total;
     }
 }

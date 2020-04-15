@@ -34,15 +34,15 @@ public class Demo {
                 break;
             }
             try {
-                int value = calculator.evaluation(line);
+                int value = calculator.evaluation(line.replaceAll(" +", ""));
                 System.out.format("> %d\n", value);
             }
             catch (SyntaxErrorException ex) {
                 System.out.format("! Incorrect syntax %s\n", ex.getMessage());
             }
-            /**catch(EvaluationErrorException ex) {
+            catch(EvaluationErrorException ex) {
                 System.out.format("! Evaluation failed %s\n", ex.getMessage());
-            }*/
+            }
 
         }
         System.out.println("Bye.");

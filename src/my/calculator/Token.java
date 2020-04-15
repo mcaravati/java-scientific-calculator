@@ -10,7 +10,7 @@ package my.calculator;
  * @author owl
  */
 public class Token {
-    final String SYMBOLS = "+-*/()";
+    final String SYMBOLS = "+-*/";
 
     final TokenType type;
     final String string;
