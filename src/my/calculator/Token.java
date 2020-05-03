@@ -10,7 +10,8 @@ package my.calculator;
  * @author owl
  */
 public class Token {
-    final String SYMBOLS = "+-*/";
+    final String SYMBOLS = "+-";
+    final String PRIORITY = "*/";
 
     final TokenType type;
     final String string;
@@ -32,8 +33,12 @@ public class Token {
         return string.equals(line);
     }
     
-    public boolean isASymbol() {
+    public boolean isSymbol() {
         return SYMBOLS.contains(string);
+    }
+    
+    public boolean isPrioritySymbol() {
+        return PRIORITY.contains(string);
     }
     
     int value() {

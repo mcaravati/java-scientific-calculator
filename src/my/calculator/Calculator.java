@@ -5,6 +5,7 @@
  */
 package my.calculator;
 
+import java.lang.Math;
 /**
  *
  * @author owl
@@ -37,7 +38,7 @@ public class Calculator {
     private int get_expr_value() throws SyntaxErrorException, EvaluationErrorException {
         int total = get_term_value();
 
-        while (token.isASymbol() && !token.isEnd()) {
+        while (token.isSymbol() && !token.isEnd()) {
             switch (token.string) {
                 case "+":
                     token = tokenizer.get();
@@ -56,7 +57,7 @@ public class Calculator {
     private int get_term_value() throws SyntaxErrorException, EvaluationErrorException {
         int total = get_factor_value();
 
-        if (token.isASymbol() && !token.isEnd()) {
+        if (token.isPrioritySymbol() && !token.isEnd()) {
             switch (token.string) {
                 case "/":
                     token = tokenizer.get();
@@ -90,7 +91,7 @@ public class Calculator {
             token = tokenizer.get();
             total += get_expr_value();
             checkSyntax(token.isSymbol(")"), ") expected");
-            token = tokenizer.get();
+            token = tokenizer.get(); 
         } else {
             throw new SyntaxErrorException("What the fuck");
         }
