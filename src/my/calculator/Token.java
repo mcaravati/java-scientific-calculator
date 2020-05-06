@@ -10,7 +10,7 @@ package my.calculator;
  * @author owl
  */
 public class Token {
-    final String SYMBOLS = "+-";
+    final String SYMBOLS = "+-*/=";
     final String PRIORITY = "*/";
 
     final TokenType type;
@@ -43,5 +43,13 @@ public class Token {
     
     int value() {
         return Integer.parseInt(string);
+    }
+
+    public boolean isWord() {
+        return type == TokenType.WORD;
+    }
+    
+    public String word() {
+        return string;
     }
 }

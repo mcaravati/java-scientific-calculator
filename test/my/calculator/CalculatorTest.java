@@ -49,7 +49,21 @@ public class CalculatorTest {
         assertEquals(7, calc.evaluation("2 + ( 3 + 2 )"));
         assertEquals(50, calc.evaluation("2 * ( 13 + 12 )"));
         assertEquals(70, calc.evaluation("(2 * ( 30 )  ) + 10"));
+        assertEquals(121, calc.evaluation("2*3 + 4*5*6 - 10/2"));
+    }
 
+    @Test
+    public void testAssignments() throws EvaluationErrorException, SyntaxErrorException {
+        Calculator calc = new Calculator();
+        assertEquals(12, calc.evaluation("num = 3*4"));
+        assertEquals(12, calc.evaluation("num"));
+        assertEquals(2, calc.evaluation("den = 2"));
+        assertEquals(2, calc.evaluation("den"));
+        assertEquals(6, calc.evaluation("num / den"));
+
+        assertEquals(10, calc.evaluation("(a = 2+1) + (b = 2*3 + 1)"));
+        assertEquals(3, calc.evaluation("a"));
+        assertEquals(7, calc.evaluation("b"));
     }
 
 }

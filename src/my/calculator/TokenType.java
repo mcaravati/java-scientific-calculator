@@ -14,4 +14,6 @@ public enum TokenType {
     SYMBOL,
     INVALID,
     END,
+    WORD,
+    ASSIGNATION,
 }

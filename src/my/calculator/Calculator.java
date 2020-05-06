@@ -6,6 +6,9 @@
 package my.calculator;
 
 import java.lang.Math;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  *
  * @author owl
@@ -14,6 +17,7 @@ public class Calculator {
 
     Tokenizer tokenizer;
     Token token;
+    Map<String, Integer> table = new HashMap<>();
 
     public Calculator() {
 
@@ -87,14 +91,38 @@ public class Calculator {
         int total = 0;
         if (token.isNumber()) {
             total += get_number_value();
+        } else if (token.isWord()) {
+            String name = token.word();
+            token = tokenizer.get();
+            if (token.type == TokenType.SYMBOL && token.isSymbol("=")) {
+                assignWord(name);
+            }
+            if(!table.containsKey(name)) {
+                throw new EvaluationErrorException("Variable \"" + name + "\" undefined");
+            }
+            total = table.get(name);
         } else if (token.isSymbol("(")) {
             token = tokenizer.get();
             total += get_expr_value();
             checkSyntax(token.isSymbol(")"), ") expected");
-            token = tokenizer.get(); 
+            token = tokenizer.get();
         } else {
             throw new SyntaxErrorException("What the fuck");
         }
         return total;
+    }
+
+    private int assignWord(String name) throws SyntaxErrorException, EvaluationErrorException {
+        int value = 0;
+        token = tokenizer.get();
+        if (token.type == TokenType.WORD) {
+            String newname = token.word();
+            token = tokenizer.get();
+            value = assignWord(newname);
+        } else if (token.type == TokenType.NUMBER) {
+            value = get_expr_value();
+        }
+        table.put(name, value);
+        return value;
     }
 }

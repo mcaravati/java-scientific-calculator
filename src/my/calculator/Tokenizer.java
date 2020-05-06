@@ -13,7 +13,7 @@ import java.util.function.Supplier;
  */
 public class Tokenizer implements Supplier<Token> {
 
-    final String SYMBOLS = "+-*/";
+    final String SYMBOLS = "+-*/=";
 
     String line;
     int next;
@@ -39,6 +39,8 @@ public class Tokenizer implements Supplier<Token> {
             return getNumber();
         } else if (SYMBOLS.indexOf(first) >= 0) {
             return getSymbol();
+        } else if (Character.isLetter(first)) {
+            return getWord();
         } else {
             next++;
             return new Token(TokenType.INVALID, Character.toString(first));
@@ -58,5 +60,16 @@ public class Tokenizer implements Supplier<Token> {
         String string = Character.toString(line.charAt(next));
         next++;
         return new Token(TokenType.SYMBOL, string);
+    }
+
+    
+    private Token getWord() {
+        String string = "";
+        while(next < line.length() && Character.isLetter(line.charAt(next))) {
+            string = string.concat(Character.toString(line.charAt(next)));
+            next++;
+        }
+        
+        return new Token(TokenType.WORD, string);
     }
 }
