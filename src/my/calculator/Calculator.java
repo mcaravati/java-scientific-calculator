@@ -57,7 +57,7 @@ public class Calculator {
     private int get_term_value() throws SyntaxErrorException, EvaluationErrorException {
         int total = get_factor_value();
 
-        if (token.isPrioritySymbol() && !token.isEnd()) {
+        while (token.isPrioritySymbol() && !token.isEnd()) {
             switch (token.string) {
                 case "/":
                     token = tokenizer.get();
