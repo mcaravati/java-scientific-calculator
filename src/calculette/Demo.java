@@ -34,8 +34,8 @@ public class Demo {
                 break;
             }
             try {
-                int value = calculator.evaluation(line.replaceAll(" +", ""));
-                System.out.format("> %d\n", value);
+                double value = calculator.evaluation(line.replaceAll(" +", ""));
+                System.out.format("> %1$,.2f\n", value);
             }
             catch (SyntaxErrorException ex) {
                 System.out.format("! Incorrect syntax %s\n", ex.getMessage());

@@ -5,13 +5,16 @@
  */
 package my.calculator;
 
+import java.util.Arrays;
+
 /**
  *
  * @author owl
  */
 public class Token {
-    final String SYMBOLS = "+-*/=";
-    final String PRIORITY = "*/";
+    final String SYMBOLS = "+-*/=^%";
+    final String PRIORITY = "*/^%";
+    final String[] expr = {"abs", "cos", "sin", "tan", "sqrt"};
 
     final TokenType type;
     final String string;
@@ -51,5 +54,9 @@ public class Token {
     
     public String word() {
         return string;
+    }
+    
+    public boolean isExpr() {
+        return Arrays.asList(expr).contains(string);
     }
 }
