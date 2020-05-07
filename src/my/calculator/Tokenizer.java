@@ -65,7 +65,7 @@ public class Tokenizer implements Supplier<Token> {
     
     private Token getWord() {
         String string = "";
-        while(next < line.length() && Character.isLetter(line.charAt(next))) {
+        while(next < line.length() && (Character.isLetter(line.charAt(next)) || Character.toString(line.charAt(next)).equals("_"))) {
             string = string.concat(Character.toString(line.charAt(next)));
             next++;
         }
