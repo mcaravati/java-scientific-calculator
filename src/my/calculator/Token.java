@@ -19,6 +19,11 @@ public class Token {
     final TokenType type;
     final String string;
 
+    /**
+     *
+     * @param type
+     * @param string
+     */
     public Token(TokenType type, String string) {
         this.type = type;
         this.string = string;

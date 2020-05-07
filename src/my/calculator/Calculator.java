@@ -23,6 +23,13 @@ public class Calculator {
 
     }
 
+    /**
+     * Calculates the value of the inserted expression
+     * @param line The user's input
+     * @return The computed value
+     * @throws SyntaxErrorException
+     * @throws EvaluationErrorException
+     */
     public double evaluation(String line) throws SyntaxErrorException, EvaluationErrorException {
         tokenizer = new Tokenizer(line.replaceAll(" +", ""));
         token = tokenizer.get();
@@ -33,6 +40,12 @@ public class Calculator {
         return total;
     }
 
+    /**
+     * Check if syntax is correct, raises an error if not
+     * @param state The state to check
+     * @param line The returned error message
+     * @throws SyntaxErrorException 
+     */
     private void checkSyntax(boolean state, String line) throws SyntaxErrorException {
         if (!state) {
             throw new SyntaxErrorException(line);
@@ -76,13 +89,13 @@ public class Calculator {
                     break;
                 case "^":
                     token = tokenizer.get();
-                    total = Math.pow((double)total, (double)get_factor_value());
+                    total = Math.pow(total, get_factor_value());
                     break;
                 case "%":
                     token = tokenizer.get();
                     double tok = get_factor_value();
-                    int tmp = ((int)total/(int)tok);
-                    total = total - (tok*tmp);
+                    int tmp = ((int) total / (int) tok);
+                    total = total - (tok * tmp);
                     break;
             }
 
@@ -109,7 +122,7 @@ public class Calculator {
                     assignWord(name);
                 }
                 if (!table.containsKey(name)) {
-                    throw new EvaluationErrorException("Variable \"" + name + "\" undefined");
+                    throw new EvaluationErrorException("Variable or expression \"" + name + "\" undefined");
                 }
                 total = table.get(name);
             } else {
@@ -126,7 +139,7 @@ public class Calculator {
             total += get_expr_value();
             checkSyntax(token.isSymbol(")"), ") expected");
             token = tokenizer.get();
-        } else if(token.isSymbol("-")) {
+        } else if (token.isSymbol("-")) {
             token = tokenizer.get();
             total -= get_expr_value();
         } else {
@@ -135,28 +148,42 @@ public class Calculator {
         return total;
     }
 
+    /**
+     * Applies a mathematical expression to a value
+     * @param name The expression's name
+     * @return The computed value
+     * @throws SyntaxErrorException
+     * @throws EvaluationErrorException 
+     */
     private int apply_expr(String name) throws SyntaxErrorException, EvaluationErrorException {
         int total = 0;
-        switch(name) {
+        switch (name) {
             case "abs":
                 total += Math.abs(get_expr_value());
                 break;
             case "cos":
-                total += Math.cos((double)get_expr_value());
+                total += Math.cos(get_expr_value());
                 break;
             case "sin":
-                total += Math.sin((double)get_expr_value());
+                total += Math.sin(get_expr_value());
                 break;
             case "tan":
-                total += Math.tan((double)get_expr_value());
+                total += Math.tan(get_expr_value());
                 break;
             case "sqrt":
-                total += Math.sqrt((double)get_expr_value());
+                total += Math.sqrt(get_expr_value());
                 break;
         }
         return total;
     }
-    
+
+    /**
+     * Recursively assign a value to one or multiple variables
+     * @param name The variable name
+     * @return The assignated value
+     * @throws SyntaxErrorException
+     * @throws EvaluationErrorException 
+     */
     private double assignWord(String name) throws SyntaxErrorException, EvaluationErrorException {
         double value = 0;
         token = tokenizer.get();
