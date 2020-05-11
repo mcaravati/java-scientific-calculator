@@ -8,6 +8,8 @@ package my.calculator;
 import java.lang.Math;
 import java.util.HashMap;
 import java.util.Map;
+import my.calculator.expr.Expr;
+import my.calculator.expr.OpBinaire;
 
 /**
  *
@@ -17,7 +19,7 @@ public class Calculator {
 
     Tokenizer tokenizer;
     Token token;
-    Map<String, Double> table = new HashMap<>();
+    TableVariables table = new TableVariables();
 
     public Calculator() {
 
@@ -34,10 +36,10 @@ public class Calculator {
         tokenizer = new Tokenizer(line.replaceAll(" +", ""));
         token = tokenizer.get();
 
-        double total = get_expr_value();
+        Expr total = get_expr_value();
 
         checkSyntax(token.isEnd(), String.format("End of expression expected, %s found", token));
-        return total;
+        return total.valeur(table);
     }
 
     /**
@@ -52,18 +54,20 @@ public class Calculator {
         }
     }
 
-    private double get_expr_value() throws SyntaxErrorException, EvaluationErrorException {
-        double total = get_term_value();
-
+    private Expr get_expr_value() throws SyntaxErrorException, EvaluationErrorException {
+        Expr total = get_term_value();
+        Expr tmp;
         while (token.isSymbol() && !token.isEnd()) {
             switch (token.string) {
                 case "+":
                     token = tokenizer.get();
-                    total += get_term_value();
+                    tmp = get_term_value();
+                    total = Expr.binaire(total, OpBinaire.PLUS, tmp);
                     break;
                 case "-":
                     token = tokenizer.get();
-                    total -= get_term_value();
+                    tmp = get_term_value();
+                    total = Expr.binaire(total, OpBinaire.MOINS, tmp);
                     break;
             }
 
@@ -71,9 +75,9 @@ public class Calculator {
         return total;
     }
 
-    private double get_term_value() throws SyntaxErrorException, EvaluationErrorException {
-        double total = get_factor_value();
-
+    private Expr get_term_value() throws SyntaxErrorException, EvaluationErrorException {
+        Expr total = get_factor_value();
+        Expr tmp;
         while (token.isPrioritySymbol() && !token.isEnd()) {
             switch (token.string) {
                 case "/":
@@ -81,21 +85,33 @@ public class Calculator {
                     if (token.isNumber() && token.value() == 0) {
                         throw new EvaluationErrorException("Division by 0");
                     }
-                    total /= get_factor_value();
+                    tmp = get_factor_value();
+                    total = Expr.binaire(total, OpBinaire.DIVISE, tmp);
                     break;
                 case "*":
                     token = tokenizer.get();
-                    total *= get_factor_value();
+                    tmp = get_factor_value();
+                    total = Expr.binaire(total, OpBinaire.FOIS, tmp);
                     break;
                 case "^":
                     token = tokenizer.get();
-                    total = Math.pow(total, get_factor_value());
+                    total = Expr.constante(Math.pow(total.valeur(table), get_factor_value().valeur(table)));
                     break;
                 case "%":
                     token = tokenizer.get();
-                    double tok = get_factor_value();
-                    int tmp = ((int) total / (int) tok);
-                    total = total - (tok * tmp);
+                    Expr tok = get_factor_value();
+                    total = Expr.binaire(
+                            total,
+                            OpBinaire.MOINS,
+                            Expr.binaire(
+                            tok,
+                            OpBinaire.FOIS,
+                            Expr.binaire(total,
+                                    OpBinaire.DIVISE,
+                                    tok)
+                            ));
+                    /*int tmp = ((int) total / (int) tok);
+                    total = total - (tok * tmp);*/
                     break;
             }
 
@@ -103,17 +119,17 @@ public class Calculator {
         return total;
     }
 
-    private int get_number_value() throws SyntaxErrorException {
+    private Expr get_number_value() throws SyntaxErrorException {
         checkSyntax(token.isNumber(), "Number expected");
         int value = token.value();
         token = tokenizer.get();
-        return value;
+        return Expr.constante(value);
     }
 
-    private double get_factor_value() throws SyntaxErrorException, EvaluationErrorException {
-        double total = 0;
+    private Expr get_factor_value() throws SyntaxErrorException, EvaluationErrorException {
+        Expr total;
         if (token.isNumber()) {
-            total += get_number_value();
+            total = get_number_value();
         } else if (token.isWord()) {
             if (!token.isExpr()) {
                 String name = token.word();
@@ -121,27 +137,27 @@ public class Calculator {
                 if (token.type == TokenType.SYMBOL && token.isSymbol("=")) {
                     assignWord(name);
                 }
-                if (!table.containsKey(name)) {
+                if (!table.contient(name)) {
                     throw new EvaluationErrorException("Variable or expression \"" + name + "\" undefined");
                 }
-                total = table.get(name);
+                total = Expr.constante(table.valeur(name));
             } else {
                 String name = token.word();
                 token = tokenizer.get();
                 checkSyntax(token.isSymbol("("), "( expected");
                 token = tokenizer.get();
-                total += apply_expr(name);
+                total = apply_expr(name);
                 checkSyntax(token.isSymbol(")"), ") expected");
                 token = tokenizer.get();
             }
         } else if (token.isSymbol("(")) {
             token = tokenizer.get();
-            total += get_expr_value();
+            total = get_expr_value();
             checkSyntax(token.isSymbol(")"), ") expected");
             token = tokenizer.get();
         } else if (token.isSymbol("-")) {
             token = tokenizer.get();
-            total -= get_expr_value();
+            total = get_expr_value();
         } else {
             throw new SyntaxErrorException("What the fuck");
         }
@@ -155,23 +171,23 @@ public class Calculator {
      * @throws SyntaxErrorException
      * @throws EvaluationErrorException 
      */
-    private int apply_expr(String name) throws SyntaxErrorException, EvaluationErrorException {
-        int total = 0;
+    private Expr apply_expr(String name) throws SyntaxErrorException, EvaluationErrorException {
+        Expr total = Expr.constante(0);
         switch (name) {
             case "abs":
-                total += Math.abs(get_expr_value());
+                total = Expr.constante(Math.abs(get_expr_value().valeur(table)));
                 break;
             case "cos":
-                total += Math.cos(get_expr_value());
+                total = Expr.constante(Math.cos(get_expr_value().valeur(table)));
                 break;
             case "sin":
-                total += Math.sin(get_expr_value());
+                total = Expr.constante(Math.sin(get_expr_value().valeur(table)));
                 break;
             case "tan":
-                total += Math.tan(get_expr_value());
+                total = Expr.constante(Math.tan(get_expr_value().valeur(table)));
                 break;
             case "sqrt":
-                total += Math.sqrt(get_expr_value());
+                total = Expr.constante(Math.sqrt(get_expr_value().valeur(table)));
                 break;
         }
         return total;
@@ -184,8 +200,8 @@ public class Calculator {
      * @throws SyntaxErrorException
      * @throws EvaluationErrorException 
      */
-    private double assignWord(String name) throws SyntaxErrorException, EvaluationErrorException {
-        double value = 0;
+    private Expr assignWord(String name) throws SyntaxErrorException, EvaluationErrorException {
+        Expr value = Expr.constante(0);
         token = tokenizer.get();
         if (token.type == TokenType.WORD) {
             String newname = token.word();
@@ -194,7 +210,7 @@ public class Calculator {
         } else if (token.type == TokenType.NUMBER) {
             value = get_expr_value();
         }
-        table.put(name, value);
+        table.affecter(name, value.valeur(table));
         return value;
     }
 }
