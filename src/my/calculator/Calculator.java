@@ -157,7 +157,7 @@ public class Calculator {
             token = tokenizer.get();
         } else if (token.isSymbol("-")) {
             token = tokenizer.get();
-            total = get_expr_value();
+            total = Expr.constante(get_expr_value().valeur(table) * -1);
         } else {
             throw new SyntaxErrorException("What the fuck");
         }

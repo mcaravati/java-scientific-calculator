@@ -25,7 +25,7 @@ public enum OpBinaire {
     }
     
     double appliquer(double a, double b) {
-        return op.applyAsDouble(b, a);
+        return op.applyAsDouble(a, b);
     }
     
 }
