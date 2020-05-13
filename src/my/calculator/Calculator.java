@@ -19,7 +19,7 @@ public class Calculator {
 
     Tokenizer tokenizer;
     Token token;
-    TableVariables table = new TableVariables();
+    VariablesTable table = new VariablesTable();
 
     public Calculator() {
 
@@ -36,10 +36,10 @@ public class Calculator {
         tokenizer = new Tokenizer(line.replaceAll(" +", ""));
         token = tokenizer.get();
 
-        Expr total = get_expr_value();
+        Expr total = get_tree_expr();
 
         checkSyntax(token.isEnd(), String.format("End of expression expected, %s found", token));
-        return total.valeur(table);
+        return total.value(table);
     }
 
     /**
@@ -54,20 +54,20 @@ public class Calculator {
         }
     }
 
-    private Expr get_expr_value() throws SyntaxErrorException, EvaluationErrorException {
-        Expr total = get_term_value();
+    private Expr get_tree_expr() throws SyntaxErrorException, EvaluationErrorException {
+        Expr total = get_tree_term();
         Expr tmp;
         while (token.isSymbol() && !token.isEnd()) {
             switch (token.string) {
                 case "+":
                     token = tokenizer.get();
-                    tmp = get_term_value();
-                    total = Expr.binaire(total, OpBinaire.PLUS, tmp);
+                    tmp = get_tree_term();
+                    total = Expr.binary(total, OpBinaire.PLUS, tmp);
                     break;
                 case "-":
                     token = tokenizer.get();
-                    tmp = get_term_value();
-                    total = Expr.binaire(total, OpBinaire.MOINS, tmp);
+                    tmp = get_tree_term();
+                    total = Expr.binary(total, OpBinaire.MINUS, tmp);
                     break;
             }
 
@@ -75,8 +75,8 @@ public class Calculator {
         return total;
     }
 
-    private Expr get_term_value() throws SyntaxErrorException, EvaluationErrorException {
-        Expr total = get_factor_value();
+    private Expr get_tree_term() throws SyntaxErrorException, EvaluationErrorException {
+        Expr total = get_tree_factor();
         Expr tmp;
         while (token.isPrioritySymbol() && !token.isEnd()) {
             switch (token.string) {
@@ -85,29 +85,29 @@ public class Calculator {
                     if (token.isNumber() && token.value() == 0) {
                         throw new EvaluationErrorException("Division by 0");
                     }
-                    tmp = get_factor_value();
-                    total = Expr.binaire(total, OpBinaire.DIVISE, tmp);
+                    tmp = get_tree_factor();
+                    total = Expr.binary(total, OpBinaire.DIVIDE, tmp);
                     break;
                 case "*":
                     token = tokenizer.get();
-                    tmp = get_factor_value();
-                    total = Expr.binaire(total, OpBinaire.FOIS, tmp);
+                    tmp = get_tree_factor();
+                    total = Expr.binary(total, OpBinaire.MULTIPLY, tmp);
                     break;
                 case "^":
                     token = tokenizer.get();
-                    total = Expr.constante(Math.pow(total.valeur(table), get_factor_value().valeur(table)));
+                    total = Expr.constant(Math.pow(total.value(table), get_tree_factor().value(table)));
                     break;
                 case "%":
                     token = tokenizer.get();
-                    Expr tok = get_factor_value();
-                    total = Expr.binaire(
+                    Expr tok = get_tree_factor();
+                    total = Expr.binary(
                             total,
-                            OpBinaire.MOINS,
-                            Expr.binaire(
+                            OpBinaire.MINUS,
+                            Expr.binary(
                             tok,
-                            OpBinaire.FOIS,
-                            Expr.binaire(total,
-                                    OpBinaire.DIVISE,
+                            OpBinaire.MULTIPLY,
+                            Expr.binary(total,
+                                    OpBinaire.DIVIDE,
                                     tok)
                             ));
                     /*int tmp = ((int) total / (int) tok);
@@ -123,10 +123,10 @@ public class Calculator {
         checkSyntax(token.isNumber(), "Number expected");
         int value = token.value();
         token = tokenizer.get();
-        return Expr.constante(value);
+        return Expr.constant(value);
     }
 
-    private Expr get_factor_value() throws SyntaxErrorException, EvaluationErrorException {
+    private Expr get_tree_factor() throws SyntaxErrorException, EvaluationErrorException {
         Expr total;
         if (token.isNumber()) {
             total = get_number_value();
@@ -137,10 +137,10 @@ public class Calculator {
                 if (token.type == TokenType.SYMBOL && token.isSymbol("=")) {
                     assignWord(name);
                 }
-                if (!table.contient(name)) {
+                if (!table.contains(name)) {
                     throw new EvaluationErrorException("Variable or expression \"" + name + "\" undefined");
                 }
-                total = Expr.constante(table.valeur(name));
+                total = Expr.constant(table.value(name));
             } else {
                 String name = token.word();
                 token = tokenizer.get();
@@ -152,14 +152,14 @@ public class Calculator {
             }
         } else if (token.isSymbol("(")) {
             token = tokenizer.get();
-            total = get_expr_value();
+            total = get_tree_expr();
             checkSyntax(token.isSymbol(")"), ") expected");
             token = tokenizer.get();
         } else if (token.isSymbol("-")) {
             token = tokenizer.get();
-            total = Expr.constante(get_expr_value().valeur(table) * -1);
+            total = Expr.constant(get_tree_expr().value(table) * -1);
         } else {
-            throw new SyntaxErrorException("What the fuck");
+            throw new SyntaxErrorException("SyntaxErrorException");
         }
         return total;
     }
@@ -172,22 +172,22 @@ public class Calculator {
      * @throws EvaluationErrorException 
      */
     private Expr apply_expr(String name) throws SyntaxErrorException, EvaluationErrorException {
-        Expr total = Expr.constante(0);
+        Expr total = Expr.constant(0);
         switch (name) {
             case "abs":
-                total = Expr.constante(Math.abs(get_expr_value().valeur(table)));
+                total = Expr.constant(Math.abs(get_tree_expr().value(table)));
                 break;
             case "cos":
-                total = Expr.constante(Math.cos(get_expr_value().valeur(table)));
+                total = Expr.constant(Math.cos(get_tree_expr().value(table)));
                 break;
             case "sin":
-                total = Expr.constante(Math.sin(get_expr_value().valeur(table)));
+                total = Expr.constant(Math.sin(get_tree_expr().value(table)));
                 break;
             case "tan":
-                total = Expr.constante(Math.tan(get_expr_value().valeur(table)));
+                total = Expr.constant(Math.tan(get_tree_expr().value(table)));
                 break;
             case "sqrt":
-                total = Expr.constante(Math.sqrt(get_expr_value().valeur(table)));
+                total = Expr.constant(Math.sqrt(get_tree_expr().value(table)));
                 break;
         }
         return total;
@@ -201,16 +201,16 @@ public class Calculator {
      * @throws EvaluationErrorException 
      */
     private Expr assignWord(String name) throws SyntaxErrorException, EvaluationErrorException {
-        Expr value = Expr.constante(0);
+        Expr value = Expr.constant(0);
         token = tokenizer.get();
         if (token.type == TokenType.WORD) {
             String newname = token.word();
             token = tokenizer.get();
             value = assignWord(newname);
         } else if (token.type == TokenType.NUMBER) {
-            value = get_expr_value();
+            value = get_tree_expr();
         }
-        table.affecter(name, value.valeur(table));
+        table.apply(name, value.value(table));
         return value;
     }
 }

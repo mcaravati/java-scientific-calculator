@@ -12,19 +12,19 @@ import java.util.Map;
  *
  * @author owl
  */
-class TableVariables implements my.calculator.expr.Environnement {
-    
-        Map<String,Double> variables = new HashMap<>();
-    
-    public void affecter(String name, double value) {
+class VariablesTable implements my.calculator.expr.Environnement {
+
+    Map<String, Double> variables = new HashMap<>();
+
+    public void apply(String name, double value) {
         variables.put(name, value);
     }
-    
-    public double valeur(String name) {
+
+    public double value(String name) {
         return variables.get(name);
     }
-    
-    public boolean contient(String name) {
+
+    public boolean contains(String name) {
         return variables.containsKey(name);
     }
 }

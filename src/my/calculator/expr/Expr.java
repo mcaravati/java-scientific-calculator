@@ -10,19 +10,19 @@ package my.calculator.expr;
  * @author owl
  */
 public interface Expr {
-    double valeur(Environnement env);
+    double value(Environnement env);
     
-    public static Expr constante(double valeur) {
-        return new ExprConstante(valeur);
+    public static Expr constant(double value) {
+        return new ExprConstante(value);
     }
-    public static Expr binaire(Expr gauche, OpBinaire op, Expr droite) {
-        return new ExprBinaire(gauche, op, droite);
+    public static Expr binary(Expr left, OpBinaire op, Expr right) {
+        return new ExprBinaire(left, op, right);
     }
-    public static Expr variable(String nom) {
-        return new ExprVariable(nom);
+    public static Expr variable(String name) {
+        return new ExprVariable(name);
     }
-    public static Expr affectation(String nom, Expr valeur) {
-        return new ExprAffectation(nom, valeur);
+    public static Expr affectation(String name, Expr value) {
+        return new ExprAffectation(name, value);
     }
 
     public String description();

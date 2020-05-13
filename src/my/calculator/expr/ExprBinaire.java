@@ -11,25 +11,25 @@ package my.calculator.expr;
  */
 class ExprBinaire implements Expr {
 
-    private final  OpBinaire op;
-    private final Expr gauche;
-    private final Expr droite;
+    private final  OpBinaire OP;
+    private final Expr LEFT;
+    private final Expr RIGHT;
 
-    public ExprBinaire( Expr gauche, OpBinaire op, Expr droite) {
-        this.op = op;
-        this.gauche = gauche;
-        this.droite = droite;
+    public ExprBinaire( Expr left, OpBinaire op, Expr right) {
+        this.OP = op;
+        this.LEFT = left;
+        this.RIGHT = right;
     }
 
     @Override
-    public double valeur(Environnement env) {
-         return op.appliquer(gauche.valeur(env), droite.valeur(env));
+    public double value(Environnement env) {
+         return OP.appliquer(LEFT.value(env), RIGHT.value(env));
     }
     
     @Override
     public String description() {
         return String.format("%s %s %s", 
-                gauche.description(), op, droite.description());
+                LEFT.description(), OP, RIGHT.description());
     }
     
 }

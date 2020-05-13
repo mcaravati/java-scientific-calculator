@@ -11,24 +11,24 @@ package my.calculator.expr;
  */
 class ExprAffectation implements Expr {
 
-    final String NOM;
-    Expr valeur;
+    final String NAME;
+    Expr value;
 
-    public ExprAffectation(String NOM, Expr valeur) {
-        this.NOM = NOM;
-        this.valeur = valeur;
+    public ExprAffectation(String NAME, Expr value) {
+        this.NAME = NAME;
+        this.value = value;
     }
     
     @Override
-    public double valeur(Environnement env) {
-        double ret = valeur.valeur(env);
-        env.affecter(NOM, ret);
+    public double value(Environnement env) {
+        double ret = value.value(env);
+        env.apply(NAME, ret);
         return ret;
     }
 
     @Override
     public String description() {
-        return "la variable " + NOM;
+        return "The variable " + NAME;
     }
     
 }

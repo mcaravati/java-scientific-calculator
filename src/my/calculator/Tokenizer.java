@@ -25,11 +25,11 @@ public class Tokenizer implements Supplier<Token> {
 
     @Override
     public Token get() {
-        // ignorer les espaces
+        // Ignore spaces
         while (next < line.length() && Character.isSpaceChar(line.charAt(next))) {
             next++;
         }
-        // savoir si c'est la fin de la ligne
+        // To know if it is the end of the string
         if (next >= line.length()) {
             return new Token(TokenType.END, "");
         }

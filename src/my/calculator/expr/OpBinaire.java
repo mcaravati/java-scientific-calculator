@@ -14,9 +14,9 @@ import java.util.function.DoubleBinaryOperator;
 public enum OpBinaire {
 
     PLUS((a, b) -> a + b),
-    MOINS((a, b) -> a - b),
-    FOIS((a, b) -> a * b),
-    DIVISE((a, b) -> a/b);
+    MINUS((a, b) -> a - b),
+    MULTIPLY((a, b) -> a * b),
+    DIVIDE((a, b) -> a/b);
     
     final DoubleBinaryOperator op;
     

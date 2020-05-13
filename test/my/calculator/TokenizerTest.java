@@ -14,7 +14,7 @@ public class TokenizerTest {
 
         Token token = tokenizer.get();
         assertTrue(token.isEnd());
-        // détection de confusions
+        // Confusion detection
         assertFalse(token.isNumber());
         assertFalse(token.isSymbol("+"));
     }
@@ -27,7 +27,6 @@ public class TokenizerTest {
         Token token = tokenizer.get();
         assertTrue(token.isNumber());
         assertEquals(123, token.value());
-        //
         assertFalse(token.isEnd());
         assertFalse(token.isSymbol("+"));
     }
@@ -39,7 +38,6 @@ public class TokenizerTest {
 
         Token token = tokenizer.get();
         assertTrue(token.isSymbol("*"));
-        // 
         assertFalse(token.isNumber());
         assertFalse(token.isEnd());
     }
@@ -85,8 +83,7 @@ public class TokenizerTest {
     
     @Test
     public void testSequenceWords() {
-        // pour vérifier qu'on ne consomme pas un
-        // caractère en trop
+        // To check if the next wrong character isn't taken
         String line = "abc=def";
         Tokenizer tokenizer = new Tokenizer(line);
 

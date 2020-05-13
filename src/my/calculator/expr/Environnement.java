@@ -10,6 +10,6 @@ package my.calculator.expr;
  * @author owl
  */
 public interface Environnement {
-    void affecter(String name, double value);
-    double  valeur(String name);
+    void apply(String name, double value);
+    double  value(String name);
 }

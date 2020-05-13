@@ -12,20 +12,20 @@ package my.calculator.expr;
 class ExprConstante implements Expr {
     
 
-    private final double valeur;
+    private final double VALUE;
 
-    ExprConstante(double valeur) {
-        this.valeur = valeur;
+    ExprConstante(double value) {
+        this.VALUE = value;
     }
 
     @Override
-    public double valeur(Environnement env) {
-        return valeur;
+    public double value(Environnement env) {
+        return VALUE;
     }
 
     @Override
     public String description() {
-        return String.format("la constante %d", valeur);
+        return String.format("The constant %d", VALUE);
     }
     
     

@@ -13,18 +13,18 @@ class ExprVariable implements Expr {
 
     final String NAME;
 
-    public ExprVariable(String nom) {
-        NAME = nom;
+    public ExprVariable(String name) {
+        NAME = name;
     }
 
     @Override
-    public double valeur(Environnement env) {
-        return env.valeur(NAME);
+    public double value(Environnement env) {
+        return env.value(NAME);
     }
 
     @Override
     public String description() {
-        return "la variable " + NAME;
+        return "The variable " + NAME;
     }
 
 }
