@@ -15,13 +15,13 @@ public class Calculator {
 
     Tokenizer tokenizer;
     Token token;
-    VariablesTable table = new VariablesTable();
+    VariablesTable table;
 
     /**
-     * Empty constructor because no argument is needed
+     * Calculator constructor
      */
     public Calculator() {
-
+        table = new VariablesTable();
     }
 
     /**
@@ -37,7 +37,7 @@ public class Calculator {
         token = tokenizer.get();
 
         Expr total = get_tree_expr();
-        System.out.println(total.getCode());
+        System.out.println("Assembly code : \n" + total.getCode());
 
         checkSyntax(token.isEnd(), String.format("End of expression expected, %s found", token));
         return total.value(table);
