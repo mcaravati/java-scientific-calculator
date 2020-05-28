@@ -15,13 +15,13 @@ public class Calculator {
 
     Tokenizer tokenizer;
     Token token;
-    VariablesTable table;
+    VariablesTable table = new VariablesTable();
 
     /**
-     * Calculator constructor
+     * Empty constructor because no argument is needed
      */
     public Calculator() {
-        table = new VariablesTable();
+
     }
 
     /**
@@ -97,14 +97,9 @@ public class Calculator {
                     Expr tok = get_tree_factor();
                     total = Expr.binary(
                             total,
-                            OpBinaire.MINUS,
-                            Expr.binary(
-                                    tok,
-                                    OpBinaire.MULTIPLY,
-                                    Expr.binary(total,
-                                            OpBinaire.DIVIDE,
-                                            tok)
-                            ));
+                            OpBinaire.MODULO,
+                            tok
+                            );
                     break;
             }
 
@@ -131,8 +126,10 @@ public class Calculator {
                     token = tokenizer.get();
                     total = Expr.affectation(name, get_tree_expr());
                     total.value(table);
-                } else {
+                } else if(table.contains(name)){
                     total = Expr.variable(name);
+                } else {
+                    throw new SyntaxErrorException(String.format("variable %s does not exist", name));
                 }
             } else {
                 String name = token.word();
@@ -150,7 +147,7 @@ public class Calculator {
             token = tokenizer.get();
         } else if (token.isSymbol("-")) {
             token = tokenizer.get();
-            total = Expr.constant(get_tree_expr().value(table) * -1);
+            total = Expr.binary(get_tree_expr(), OpBinaire.MULTIPLY, Expr.constant(-1));
         } else {
             throw new SyntaxErrorException("SyntaxErrorException");
         }

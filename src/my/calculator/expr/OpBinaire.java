@@ -26,7 +26,12 @@ public enum OpBinaire {
     /**
      * Computes a / b
      */
-    DIVIDE((a, b) -> a/b);
+    DIVIDE((a, b) -> a/b),
+    
+    /**
+     * Computes a%b
+     */
+    MODULO((a, b) -> a%b);
     
     final DoubleBinaryOperator op;
     

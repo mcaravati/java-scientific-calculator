@@ -30,13 +30,16 @@ public class Demo {
             }
             try {
                 double value = calculator.evaluation(line.replaceAll(" +", ""));
-                System.out.format("> %1$,.2f\n", value);
+                System.out.format("= %1$,.2f\n", value);
             }
             catch (SyntaxErrorException ex) {
-                System.out.format("! Incorrect syntax %s\n", ex.getMessage());
+                System.err.format("! Incorrect syntax : %s\n", ex.getMessage());
             }
             catch(EvaluationErrorException ex) {
-                System.out.format("! Evaluation failed %s\n", ex.getMessage());
+                System.err.format("! Evaluation failed : %s\n", ex.getMessage());
+            }
+            catch (NumberFormatException ex) {
+                System.err.format("! Number too big for a double : %s\n", ex.getMessage());
             }
 
         }
