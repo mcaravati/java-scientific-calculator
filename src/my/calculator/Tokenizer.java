@@ -1,15 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package my.calculator;
 
 import java.util.function.Supplier;
 
 /**
- *
- * @author owl
+ *  Class used to manage tokens
+ * @author Matteo CARAVATI
  */
 public class Tokenizer implements Supplier<Token> {
 
@@ -18,6 +13,10 @@ public class Tokenizer implements Supplier<Token> {
     String line;
     int next;
 
+    /**
+     * Creates a Tokenizer object
+     * @param line The line to parse
+     */
     public Tokenizer(String line) {
         this.line = line;
         this.next = 0;

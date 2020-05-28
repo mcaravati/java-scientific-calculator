@@ -1,16 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package calculette;
 
 import java.util.Scanner;
 import my.calculator.*;
 
 /**
- *
- * @author owl
+ * Boucle principale d'interaction avec le programme
+ * @author Matteo CARAVATI
  */
 public class Demo {
 

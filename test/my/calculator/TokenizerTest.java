@@ -5,8 +5,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+/**
+ * Test for the Tokenizer class
+ * @author Matteo CARAVATI
+ */
 public class TokenizerTest {
 
+    /**
+     * Sees if the Tokenizer recognizes the end of the line
+     */
     @Test
     public void testEnd() {
         String line = "    ";
@@ -19,6 +26,9 @@ public class TokenizerTest {
         assertFalse(token.isSymbol("+"));
     }
 
+    /**
+     * Sees if the Tokenizer recognizes a number
+     */
     @Test
     public void testNumber() {
         String line = " 123   ";
@@ -31,6 +41,9 @@ public class TokenizerTest {
         assertFalse(token.isSymbol("+"));
     }
 
+    /**
+     * Sees if the Tokenizer recognizes a symbol
+     */
     @Test
     public void testSymbol() {
         String line = " *   ";
@@ -42,6 +55,9 @@ public class TokenizerTest {
         assertFalse(token.isEnd());
     }
 
+    /**
+     * Sees if the Tokenizer decomposes the expression properly
+     */
     @Test
     public void testSequence() {
         String line = "12+(34)";
@@ -69,6 +85,9 @@ public class TokenizerTest {
 
     }
     
+    /**
+     * Sees if the Tokenizer recognizes a word
+     */
     @Test
     public void testWord() {
         String line = " hello  ";
@@ -78,9 +97,13 @@ public class TokenizerTest {
         assertTrue(token.isWord());
         assertEquals("hello", token.word());
         
-        // etc.
+        token = tokenizer.get();
+        assertTrue(token.isEnd());
     }
     
+    /**
+     * Sees if the Tokenizer recognizes an assignation
+     */
     @Test
     public void testSequenceWords() {
         // To check if the next wrong character isn't taken

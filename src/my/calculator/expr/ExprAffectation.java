@@ -1,13 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package my.calculator.expr;
 
 /**
- *
- * @author owl
+ * The affectation expression, to apply a variable to the evironment
+ * @author Matteo CARAVATI
  */
 class ExprAffectation implements Expr {
 
@@ -30,5 +25,11 @@ class ExprAffectation implements Expr {
     public String description() {
         return "The variable " + NAME;
     }
+
+    @Override
+    public String getCode(int numRegistre) {
+        return(String.format("%s\nst    r%d, %s", value.getCode(numRegistre), numRegistre, NAME));
+    }
+    
     
 }

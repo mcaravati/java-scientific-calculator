@@ -1,21 +1,31 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package my.calculator.expr;
 
 import java.util.function.DoubleBinaryOperator;
 
 /**
- *
- * @author owl
+ * The 4 main arithmetic operations
+ * @author Matteo CARAVATI
  */
 public enum OpBinaire {
 
+    /**
+     * Computes a + b
+     */
     PLUS((a, b) -> a + b),
+
+    /**
+     * Computes a - b
+     */
     MINUS((a, b) -> a - b),
+
+    /**
+     * Computes a * b
+     */
     MULTIPLY((a, b) -> a * b),
+
+    /**
+     * Computes a / b
+     */
     DIVIDE((a, b) -> a/b);
     
     final DoubleBinaryOperator op;

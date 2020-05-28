@@ -1,13 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package my.calculator.expr;
 
 /**
- *
- * @author owl
+ * The variable expression used to return a variable's value
+ * @author Matteo CARAVATI
  */
 class ExprVariable implements Expr {
 
@@ -25,6 +20,11 @@ class ExprVariable implements Expr {
     @Override
     public String description() {
         return "The variable " + NAME;
+    }
+    
+    @Override
+    public String getCode(int numeroRegistre) {
+        return String.format("li    r%d,%s", numeroRegistre, NAME);
     }
 
 }

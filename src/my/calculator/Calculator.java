@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package my.calculator;
 
 import java.lang.Math;
@@ -12,8 +7,9 @@ import my.calculator.expr.Expr;
 import my.calculator.expr.OpBinaire;
 
 /**
+ * Class containing the core functions required by the Calculator to work
  *
- * @author owl
+ * @author Matteo CARAVATI
  */
 public class Calculator {
 
@@ -21,33 +17,32 @@ public class Calculator {
     Token token;
     VariablesTable table = new VariablesTable();
 
+    /**
+     * Empty constructor because no argument is needed
+     */
     public Calculator() {
 
     }
 
     /**
      * Calculates the value of the inserted expression
+     *
      * @param line The user's input
      * @return The computed value
-     * @throws SyntaxErrorException
-     * @throws EvaluationErrorException
+     * @throws SyntaxErrorException catch input errors
+     * @throws EvaluationErrorException catch calculation errors such as division by 0
      */
     public double evaluation(String line) throws SyntaxErrorException, EvaluationErrorException {
         tokenizer = new Tokenizer(line.replaceAll(" +", ""));
         token = tokenizer.get();
 
         Expr total = get_tree_expr();
+        System.out.println(total.getCode());
 
         checkSyntax(token.isEnd(), String.format("End of expression expected, %s found", token));
         return total.value(table);
     }
 
-    /**
-     * Check if syntax is correct, raises an error if not
-     * @param state The state to check
-     * @param line The returned error message
-     * @throws SyntaxErrorException 
-     */
     private void checkSyntax(boolean state, String line) throws SyntaxErrorException {
         if (!state) {
             throw new SyntaxErrorException(line);
@@ -104,14 +99,12 @@ public class Calculator {
                             total,
                             OpBinaire.MINUS,
                             Expr.binary(
-                            tok,
-                            OpBinaire.MULTIPLY,
-                            Expr.binary(total,
-                                    OpBinaire.DIVIDE,
-                                    tok)
+                                    tok,
+                                    OpBinaire.MULTIPLY,
+                                    Expr.binary(total,
+                                            OpBinaire.DIVIDE,
+                                            tok)
                             ));
-                    /*int tmp = ((int) total / (int) tok);
-                    total = total - (tok * tmp);*/
                     break;
             }
 
@@ -127,7 +120,7 @@ public class Calculator {
     }
 
     private Expr get_tree_factor() throws SyntaxErrorException, EvaluationErrorException {
-        Expr total;
+        Expr total = null;
         if (token.isNumber()) {
             total = get_number_value();
         } else if (token.isWord()) {
@@ -135,12 +128,12 @@ public class Calculator {
                 String name = token.word();
                 token = tokenizer.get();
                 if (token.type == TokenType.SYMBOL && token.isSymbol("=")) {
-                    assignWord(name);
+                    token = tokenizer.get();
+                    total = Expr.affectation(name, get_tree_expr());
+                    total.value(table);
+                } else {
+                    total = Expr.variable(name);
                 }
-                if (!table.contains(name)) {
-                    throw new EvaluationErrorException("Variable or expression \"" + name + "\" undefined");
-                }
-                total = Expr.constant(table.value(name));
             } else {
                 String name = token.word();
                 token = tokenizer.get();
@@ -164,13 +157,6 @@ public class Calculator {
         return total;
     }
 
-    /**
-     * Applies a mathematical expression to a value
-     * @param name The expression's name
-     * @return The computed value
-     * @throws SyntaxErrorException
-     * @throws EvaluationErrorException 
-     */
     private Expr apply_expr(String name) throws SyntaxErrorException, EvaluationErrorException {
         Expr total = Expr.constant(0);
         switch (name) {
@@ -194,23 +180,16 @@ public class Calculator {
     }
 
     /**
-     * Recursively assign a value to one or multiple variables
-     * @param name The variable name
-     * @return The assignated value
-     * @throws SyntaxErrorException
-     * @throws EvaluationErrorException 
+     * Returns the assembly instructions of the calculus
+     * @param line the line to convert
+     * @return the assembly instructions
+     * @throws SyntaxErrorException catch input errors
+     * @throws EvaluationErrorException catch calculation errors such as division by 0
      */
-    private Expr assignWord(String name) throws SyntaxErrorException, EvaluationErrorException {
-        Expr value = Expr.constant(0);
+    public String compilation(String line) throws EvaluationErrorException, SyntaxErrorException {
+        tokenizer = new Tokenizer(line.replaceAll(" +", ""));
         token = tokenizer.get();
-        if (token.type == TokenType.WORD) {
-            String newname = token.word();
-            token = tokenizer.get();
-            value = assignWord(newname);
-        } else if (token.type == TokenType.NUMBER) {
-            value = get_tree_expr();
-        }
-        table.apply(name, value.value(table));
-        return value;
+        Expr total = get_tree_expr();
+        return total.getCode();
     }
 }

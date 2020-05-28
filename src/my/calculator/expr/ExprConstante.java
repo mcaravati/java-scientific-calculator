@@ -1,13 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package my.calculator.expr;
 
 /**
- *
- * @author owl
+ * The constant expression, used to declare constants such as 1 or 21
+ * @author Matteo CARAVATI
  */
 class ExprConstante implements Expr {
     
@@ -28,5 +23,9 @@ class ExprConstante implements Expr {
         return String.format("The constant %d", VALUE);
     }
     
+    @Override
+    public String getCode(int numeroRegistre) {
+        return String.format("li    r%d, %f", numeroRegistre, VALUE);
+    }
     
 }

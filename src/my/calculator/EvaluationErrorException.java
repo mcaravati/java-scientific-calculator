@@ -1,16 +1,15 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package my.calculator;
 
 /**
- *
- * @author owl
+ * Error thrown when there is an arithmetic error such as a division by 0
+ * @author Matteo CARAVATI
  */
 public class EvaluationErrorException extends Exception{ 
 
+    /**
+     * Throws an error with the message passed as argument
+     * @param message The error message
+     */
     public EvaluationErrorException(String message) {
         super(message);
     }
